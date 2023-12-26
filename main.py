@@ -3,7 +3,9 @@ from discord.ext import commands, tasks
 import os
 import requests
 localcache = []
-bot = commands.Bot(command_prefix='ilikeputtingrandomstuffasthecommandprefix 💀')
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix='ilikeputtingrandomstuffasthecommandprefix 💀',intents=intents)
 
 if "BOT_TOKEN" in os.environ:
     bot_token = os.environ["BOT_TOKEN"]
@@ -48,16 +50,13 @@ async def check(member):
             await member.ban(reason=reason)
             print(f"Banned member {member.name}#{member.discriminator} ({member.id}) for link leaking.")
             return True
-        else:
-            banned_users = await member.guild.bans()
-            for banned_user in banned_users:
-                if str(banned_user.user.id) == mid and 'AntiLinkLeak' in banned_user.reason:
+        
+        async for banned_user in member.guild.bans():
+                if str(banned_user.user.id) not in localcache and 'AntiLinkLeak' in banned_user.reason:
                     await member.guild.unban(banned_user.user, reason='AntiLinkLeak: User removed from ban list.')
-                    print(f"Unbanned member {member.name}#{member.discriminator} ({member.id}).")
+                    print(f"Unbanned member {banned_user.user.name}#{banned_user.user.discriminator} ({banned_user.user.id}).")
                     return "unban"
-
-            print(f"Member {member.name}#{member.discriminator} ({member.id}) joined/left, not banned.")
-            return False
+        return False
 
     except Exception as e:
         print(f"Error checking and banning member: {e}")
@@ -67,6 +66,7 @@ async def check(member):
 
 @bot.slash_command(name='llban')
 async def llban(ctx):
+    await ctx.defer();
     total = 0
     unbanned = 0
     try:
@@ -74,10 +74,12 @@ async def llban(ctx):
         members = await ctx.guild.fetch_members(limit=None).flatten()
 
         for member in members:
-            if (await check(member)):
-                total += 1
-            elif (await check(member) == "unban"):
+            cr = await check(member)
+            if (cr == "unban"):
                 unbanned += 1
+            elif (cr):
+                total += 1
+            
 
     except Exception as e:
         print(f"Error checking server: {e}")
