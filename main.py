@@ -65,7 +65,7 @@ async def check(member):
 
 
 
-@bot.command(name='llban')
+@bot.slash_command(name='llban')
 async def llban(ctx):
     total = 0
     unbanned = 0
