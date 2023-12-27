@@ -50,14 +50,8 @@ async def check(member):
             await member.ban(reason=reason)
             print(f"Banned member {member.name}#{member.discriminator} ({member.id}) for link leaking.")
             return True
-        
-        async for banned_user in member.guild.bans():
-                if str(banned_user.user.id) not in localcache and 'AntiLinkLeak' in banned_user.reason:
-                    await member.guild.unban(banned_user.user, reason='AntiLinkLeak: User removed from ban list.')
-                    print(f"Unbanned member {banned_user.user.name}#{banned_user.user.discriminator} ({banned_user.user.id}).")
-                    return "unban"
         return False
-
+        
     except Exception as e:
         print(f"Error checking and banning member: {e}")
 
@@ -79,7 +73,11 @@ async def llban(ctx):
                 unbanned += 1
             elif (cr):
                 total += 1
-            
+        async for banned_user in member.guild.bans():
+          if str(banned_user.user.id) not in localcache and 'AntiLinkLeak' in banned_user.reason:
+           await member.guild.unban(banned_user.user, reason='AntiLinkLeak: User removed from ban list.')
+           print(f"Unbanned member {banned_user.user.name}#{banned_user.user.discriminator} ({banned_user.user.id}).")
+           return "unban"
 
     except Exception as e:
         print(f"Error checking server: {e}")
