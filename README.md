@@ -20,3 +20,5 @@ echo YOUR_BOT_TOKEN > env/token.txt
 rem environment variable
 set BOT_TOKEN=YOUR_BOT_TOKEN
 ```
+
+Invite the official bot [**here**](https://discord.com/api/oauth2/authorize?client_id=1189290892486516737&permissions=274877908996&scope=bot%20applications.commands)
